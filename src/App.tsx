@@ -13,7 +13,11 @@ function App() {
   const [tableData, setData] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [currentEmployee, setEmployee] = useState([])
+  const [currentEmployeeByName, setNameEmployee] = useState([])
+  const [currentEmployeeByEmail, setEmailEmployee] = useState([])
   const [id, setId] = useState("")
+  const [name, setName] = useState("")
+  const [email, setEmail] = useState("")
   const [newEmployee, setNewEmployee] = useState({
     name: '',
     email: '',
@@ -65,6 +69,26 @@ function App() {
       console.log(data)
     } catch (error) {
       console.log(error.response.data);
+    }
+  }
+
+  const handleFetchEmployeeByName = async () => {
+    try{
+      const {data} = await axios.get("http://localhost:3000/api/employees/names/" + name,)
+      setNameEmployee({...data})
+    }
+    catch(error){
+      console.log(error.response.data)
+    }
+  }
+
+  const handleFetchEmployeeByEmail = async () => {
+    try{
+      const {data} = await axios.get("http://localhost:3000/api/employees/emails/" + email,)
+      setEmailEmployee({...data})
+    }
+    catch(error){
+      console.log(error.response.data)
     }
   }
 
@@ -164,6 +188,49 @@ function App() {
             </p>
           ))}
         </div>
+
+
+        <p style={{ fontSize: "1.5vw ", fontWeight: "bold", marginBottom: "-0.1vw" }}>Employee By Name</p>
+
+        <div className="box-outline">
+          <div className="employee-search">
+            <p style={{ fontSize: "25px" }}>Name:</p>
+            <input style={{ height: "2vw", display: "flex", justifyContent: "center", alignItems: "center" }} value={name} onChange={e => setName(e.target.value)}></input>
+            <button style={{ maxHeight: "50px", justifyContent: "flex-start" }} onClick={() => { handleFetchEmployeeByName() }}>Get Employee</button>
+          </div>
+
+          <p>Current Employee</p>
+          {
+            //display everything returned from the get request for a specfic employee
+          }
+          {Object.entries(currentEmployeeByName).map(([key, value]) => (
+            <p key={key}>
+              <strong>{key}:</strong> {value}
+            </p>
+          ))}
+        </div>
+
+
+        <p style={{ fontSize: "1.5vw ", fontWeight: "bold", marginBottom: "-0.1vw" }}>Employee By Email</p>
+
+        <div className="box-outline">
+          <div className="employee-search">
+            <p style={{ fontSize: "25px" }}>Email:</p>
+            <input style={{ height: "2vw", display: "flex", justifyContent: "center", alignItems: "center" }} value={email} onChange={e => setEmail(e.target.value)}></input>
+            <button style={{ maxHeight: "50px", justifyContent: "flex-start" }} onClick={() => { handleFetchEmployeeByEmail() }}>Get Employee</button>
+          </div>
+
+          <p>Current Employee</p>
+          {
+            //display everything returned from the get request for a specfic employee
+          }
+          {Object.entries(currentEmployeeByEmail).map(([key, value]) => (
+            <p key={key}>
+              <strong>{key}:</strong> {value}
+            </p>
+          ))}
+        </div>
+
         <div>
           <div>
             <p style={{ fontSize: "1.5vw ", fontWeight: "bold", marginBottom: "-0.1vw" }}>Add Employee</p>
@@ -261,19 +328,19 @@ function App() {
               </div>
               <p style={{ fontSize: "1.5vw ", fontWeight: "bold", marginBottom: "-0.1vw" }}>Delete Employee</p>
               <div className="box-outline">
-              <div className='input-fields'>
-                <p>Delete User</p>
-                <button onClick={() => deleteEmployee()}>DELETE</button>
-              </div>
-              <div className='input-fields'>
-                <p>ID:</p>
-                <input name="id" value={`${employeeID.id}`} onChange={e => {
-                  const { name, value } = e.target;
-                  setEmployeeID((prevEmployee) => ({
-                    ...prevEmployee,   // Spread the previous state to keep other fields
-                    [name]: parseInt(value)      // Update the specific field
-                  }));
-                }}></input>
+                <div className='input-fields'>
+                  <p>Delete User</p>
+                  <button onClick={() => deleteEmployee()}>DELETE</button>
+                </div>
+                <div className='input-fields'>
+                  <p>ID:</p>
+                  <input name="id" value={`${employeeID.id}`} onChange={e => {
+                    const { name, value } = e.target;
+                    setEmployeeID((prevEmployee) => ({
+                      ...prevEmployee,   // Spread the previous state to keep other fields
+                      [name]: parseInt(value)      // Update the specific field
+                    }));
+                  }}></input>
                 </div>
               </div>
             </div>
