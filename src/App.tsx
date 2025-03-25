@@ -5,12 +5,14 @@ import './App.css'
 import TitleCard from './TitleCard';
 import Table from './Table'
 import axios from 'axios';
+import ReactModal from 'react-modal';
 
 function App() {
 
   const columnNames = ["Id", "Name", "Role", "Email"];
 
   const [tableData, setData] = useState([]);
+  const [modalActive, setModalActive] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [currentEmployee, setEmployee] = useState([])
   const [currentEmployeeByName, setNameEmployee] = useState([])
@@ -34,6 +36,11 @@ function App() {
   const [employeeID, setEmployeeID] = useState({
     id: 0,
   })
+
+
+  // email validation method
+  const isEmail = (email : string) =>
+    /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email);
 
   const columns = React.useMemo(
     () =>
@@ -93,6 +100,28 @@ function App() {
   }
 
   const pushNewEmployee = async () => {
+
+    // all fields not filled
+    if(newEmployee.name === "" || newEmployee.email === "" || newEmployee.role === ""){
+      setErrorMessage("All fields must be filled to add a new employee");
+      setModalActive(true);
+      return;
+    }
+
+    // role not an option
+    if(newEmployee.role !== "INTERN" && newEmployee.role !== "ENGINEER" && newEmployee.role !== "ADMIN"){
+      setErrorMessage("Role must be one of the follwing options: INTERN | ENGINEER| ADMIN");
+      setModalActive(true);
+      return;
+    }
+
+    // email check
+    if(!isEmail(newEmployee.email)){
+      setErrorMessage("Invalid email. Please enter a valid email.");
+      setModalActive(true);
+      return;
+    }
+
     try {
       console.log(id)
       const { data } = await axios.post("http://localhost:3000/api/employees", {
@@ -166,6 +195,14 @@ function App() {
         <Table columns={columns} data={tableData}></Table>
       </div>
       <div>
+      <ReactModal
+      isOpen = {modalActive}
+      onRequestClose={() => setModalActive(false)}
+      className={"Error Modal"}>
+        <h2 className="error-text">Error</h2>
+            <p className="error-text">{errorMessage}</p>
+            <button onClick={() => setModalActive(false)}>Close</button>
+      </ReactModal>
 
         <button style={{ marginBottom: "1vw" }} onClick={() => { handleTableFetch() }}>Fetch Table Data</button>
 
