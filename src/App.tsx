@@ -42,6 +42,22 @@ function App() {
   const isEmail = (email : string) =>
     /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email);
 
+  const isValidId = (id : number) => {
+    if(id <= 0 || !Number.isFinite(id)){
+      return false;
+    }
+
+    return true;
+  }
+
+  const isValidName = (name: string) => {
+    if(Number.isFinite(+updateEmployee.name)){
+      return false;
+    }
+
+    return true;
+  }
+
   const columns = React.useMemo(
     () =>
       columnNames.map((col) => ({
@@ -68,7 +84,7 @@ function App() {
   const handleFetchEmployee = async () => {
 
       // check that id is number and greater than 0
-      if(+id <= 0 || !Number.isFinite(+id)){
+      if(!isValidId(+id)){
         setErrorMessage("ID must a number and larger than 0");
         setModalActive(true);
         return;
@@ -92,7 +108,7 @@ function App() {
   const handleFetchEmployeeByName = async () => {
 
         // name check
-        if(Number.isFinite(+name)){
+        if(!isValidName(name)){
           setErrorMessage("Invalid name. The field cannot but empty or be a number.");
           setModalActive(true);
           return;
@@ -152,6 +168,13 @@ function App() {
       return;
     }
 
+    // name check
+    if(!isValidName(newEmployee.name)){
+      setErrorMessage("Invalid name. Name cannot be a number");
+      setModalActive(true);
+      return;
+    }
+
     try {
       console.log(id)
       const { data } = await axios.post("http://localhost:3000/api/employees", {
@@ -173,6 +196,27 @@ function App() {
   }
 
   const updateEmployeInfo = async () => {
+
+    // make sure id passed is valid
+    if(!isValidId(+updateEmployee.id)){
+      setErrorMessage("ID must a number and larger than 0");
+      setModalActive(true);
+      return;
+    }
+
+    if(updateEmployee.email != "" && !isEmail(updateEmployee.email)){
+      setErrorMessage("Invalid email. Please enter a valid email.");
+      setModalActive(true);
+      return;
+    }
+
+      // name check
+    if( updateEmployee.name != "" && !isValidName(newEmployee.name)){
+      setErrorMessage("Invalid name. Name cannot be a number");
+      setModalActive(true);
+      return;
+    }
+
     try {
 
       const payload = Object.fromEntries(
@@ -198,6 +242,13 @@ function App() {
   }
 
   const deleteEmployee = async () => {
+       // make sure id passed is valid
+       if(!isValidId(+employeeID.id)){
+        setErrorMessage("ID must a number and larger than 0");
+        setModalActive(true);
+        return;
+      }
+
     try {
 
       const payload = Object.fromEntries(
