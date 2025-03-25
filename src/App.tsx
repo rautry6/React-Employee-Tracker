@@ -66,6 +66,14 @@ function App() {
   }
 
   const handleFetchEmployee = async () => {
+
+      // check that id is number and greater than 0
+      if(+id <= 0 || !Number.isFinite(+id)){
+        setErrorMessage("ID must a number and larger than 0");
+        setModalActive(true);
+        return;
+      }
+
     try {
       console.log(id)
       const { data } = await axios.get("http://localhost:3000/api/employees/" + id,
@@ -76,26 +84,48 @@ function App() {
       console.log(data)
     } catch (error) {
       console.log(error.response.data);
+      setErrorMessage("ID must a number and larger than 0");
+      setModalActive(true);
     }
   }
 
   const handleFetchEmployeeByName = async () => {
+
+        // name check
+        if(Number.isFinite(+name)){
+          setErrorMessage("Invalid name. The field cannot but empty or be a number.");
+          setModalActive(true);
+          return;
+        }
+
     try{
       const {data} = await axios.get("http://localhost:3000/api/employees/names/" + name,)
       setNameEmployee({...data})
     }
     catch(error){
       console.log(error.response.data)
+      setErrorMessage(error.response.data);
+      setModalActive(true);
     }
   }
 
   const handleFetchEmployeeByEmail = async () => {
+
+    // email check
+    if(!isEmail(email)){
+      setErrorMessage("Invalid email. Please enter a valid email.");
+      setModalActive(true);
+      return;
+    }
+
     try{
       const {data} = await axios.get("http://localhost:3000/api/employees/emails/" + email,)
       setEmailEmployee({...data})
     }
     catch(error){
       console.log(error.response.data)
+      setErrorMessage(error.response.data);
+      setModalActive(true);
     }
   }
 
